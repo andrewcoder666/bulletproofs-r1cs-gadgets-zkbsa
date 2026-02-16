@@ -2,32 +2,33 @@
 name = "bulletproofs_examples"
 version = "0.1.1"
 authors = ["lovesh harchandani <lovesh.bond@gmail.com>"]
-edition = "2018"
+edition = "2021"
+resolver = "2"
 
 [dependencies]
-curve25519-dalek = { version = "2", default-features = false, features = ["u64_backend", "nightly", "serde", "alloc"] }
+curve25519-dalek = { version = "4.0.0-pre.5", default-features = true, features = ["alloc", "serde", "digest", "rand_core", "legacy_compatibility"] }
 subtle = { version = "2", default-features = false }
-sha3 = { version = "0.8", default-features = false }
-digest = { version = "0.8", default-features = false }
-rand_core = { version = "0.5", default-features = false, features = ["alloc"] }
-rand = { version = "0.7", default-features = false, features =["std"] }
+sha3 = { version = "0.10", default-features = false }
+digest = { version = "0.10", default-features = false }
+rand_core = { version = "0.6.4", default-features = true, features = ["alloc"] }
+rand = { version = "0.8", default-features = true, features = ["std", "std_rng"]}
 byteorder = { version = "1", default-features = false }
 serde = { version = "1", default-features = false, features = ["alloc"] }
 serde_derive = { version = "1", default-features = false }
 thiserror = { version = "1", optional = true }
-merlin = { version = "2", default-features = false }
-clear_on_drop = { version = "0.2", default-features = false, features = ["nightly"] }
+merlin = { version = "3", default-features = false }
+clear_on_drop = "0.2.5"
 failure = "0.1"
 
 [dependencies.bulletproofs]
-#path = "../bulletproofs"
-git = "https://github.com/lovesh/bulletproofs"
-branch = "smt"
-features = ["std", "avx2_backend", "yoloproofs"]
+git = "https://github.com/andrewcoder666/bulletproofs"
+branch = "2.0.0-curve400-pre5-yoloproofs-lovesh"
+default-features = true
+features = ["yoloproofs"]
 
 [dev-dependencies]
 hex = "0.3"
 criterion = "0.3"
 bincode = "1"
-rand_chacha = "0.2"
+rand_chacha = "0.3"
 spock = "0.1.0"

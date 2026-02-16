@@ -45,7 +45,7 @@ impl<'a> VanillaSparseMerkleTree_4<'a> {
         let depth = TreeDepth;
         let mut db = HashMap::new();
         let mut empty_tree_hashes: Vec<Scalar> = vec![];
-        empty_tree_hashes.push(Scalar::zero());
+        empty_tree_hashes.push(Scalar::ZERO);
         for i in 1..=depth {
             let prev = empty_tree_hashes[i-1];
             let input: [Scalar; 4] = [prev.clone(); 4];
@@ -86,7 +86,7 @@ impl<'a> VanillaSparseMerkleTree_4<'a> {
             // Insert the value at the position determined by the base 4 digit
             side_elem.insert(d as usize, cur_val);
 
-            let mut input: DBVal = [Scalar::zero(); 4];
+            let mut input: DBVal = [Scalar::ZERO; 4];
             input.copy_from_slice(side_elem.as_slice());
             let h = Poseidon_hash_4(input.clone(), self.hash_params, &SboxType::Inverse);
             self.update_db_with_key_val(h, input);
@@ -111,7 +111,7 @@ impl<'a> VanillaSparseMerkleTree_4<'a> {
             let children = self.db.get(&k).unwrap();
             cur_node = children[d as usize];
             if need_proof {
-                let mut proof_node: ProofNode = [Scalar::zero(); 3];
+                let mut proof_node: ProofNode = [Scalar::ZERO; 3];
                 let mut j = 0;
                 for (i, c) in children.to_vec().iter().enumerate() {
                     if i != (d as usize) {
@@ -142,7 +142,7 @@ impl<'a> VanillaSparseMerkleTree_4<'a> {
         for (i, d) in cur_idx.iter().enumerate() {
             let mut p = proof[self.depth-1-i].clone().to_vec();
             p.insert(*d as usize, cur_val);
-            let mut input: DBVal = [Scalar::zero(); 4];
+            let mut input: DBVal = [Scalar::ZERO; 4];
             input.copy_from_slice(p.as_slice());
             let h = Poseidon_hash_4(input.clone(), self.hash_params, &SboxType::Inverse);
             cur_val = h;
@@ -213,8 +213,8 @@ pub fn vanilla_merkle_merkle_tree_4_verif_gadget<CS: ConstraintSystem>(
     let statics: Vec<LinearCombination> = statics.iter().map(|s| s.variable.into()).collect();
 
     // Initialize  constraint_leaf_index with -leaf_index.
-    let mut constraint_leaf_index = vec![(leaf_index.variable, -Scalar::one())];
-    let mut exp_4 = Scalar::one();
+    let mut constraint_leaf_index = vec![(leaf_index.variable, -Scalar::ONE)];
+    let mut exp_4 = Scalar::ONE;
     let two = Scalar::from(2u64);
     let four = Scalar::from(4u64);
 

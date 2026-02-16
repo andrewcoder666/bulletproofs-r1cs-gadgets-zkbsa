@@ -24,7 +24,7 @@ impl fmt::Debug for ScalarBits {
 
 impl ScalarBits {
     pub fn from_scalar(scalar: &Scalar, process_bits: usize) -> Self {
-        let s = scalar.reduce();
+        let s = Scalar::from_bytes_mod_order(scalar.to_bytes());
         Self {
             bit_array: get_bits(&s, process_bits)
         }
@@ -63,7 +63,8 @@ impl ScalarBits {
         }
         bytes[31] = current_byte;
         Scalar::from_bits(bytes).reduce()*/
-        self.to_non_reduced_scalar().reduce()
+        let s = Scalar::from_bytes_mod_order(self.to_non_reduced_scalar().to_bytes());
+        s
     }
 
     pub fn to_non_reduced_scalar(&self) -> Scalar {
@@ -163,8 +164,9 @@ pub fn u64_array_to_scalar(array: &[u64; 4]) -> Scalar {
     let mut result: [u8; 32] = [0; 32];
     LittleEndian::write_u64_into(array, &mut result);
     let s = Scalar::from_bits(result);
-    s.reduce()
-}
+    let s_res = Scalar::from_bytes_mod_order(s.to_bytes());
+    s_res
+}   
 
 /// Get a base 4 representation of the given `scalar`. Only process `limit_bytes` of the scalar
 pub fn get_base_4_repr(scalar: &Scalar, limit_bytes: usize) -> Vec<u8> {
@@ -252,7 +254,7 @@ mod tests {
             //assert_eq!(b_arr, ScalarBits::from_scalar(&b_arr.to_scalar()));
         }
 
-        /*let mut one = ScalarBitArray::from_scalar(&Scalar::one());
+        /*let mut one = ScalarBitArray::from_scalar(&Scalar::ONE);
         println!("{:?}", one.to_scalar());
         for i in 0..TreeDepth {
             one.shl();
@@ -271,7 +273,7 @@ mod tests {
             println!("{:?}", e);*/
         }
 
-        let o = BASEPOINT_ORDER - Scalar::one();
+        let o = BASEPOINT_ORDER - Scalar::ONE;
         let u = scalar_to_u64_array(&o);
         let e = u64_array_to_scalar(&u);
         assert_eq!(e, o);
@@ -303,7 +305,7 @@ mod tests {
 
     #[test]
     fn test_invert() {
-        let x = Scalar::zero();
+        let x = Scalar::ZERO;
         println!("Inverse {:?}", x.invert());
     }
 }

@@ -25,7 +25,7 @@ pub fn is_zero_gadget<CS: ConstraintSystem>(
     let y: u32 = 0;
     let inv: u32 = 0;
 
-    let x_lc: LinearCombination = vec![(x.variable, Scalar::one())].iter().collect();
+    let x_lc: LinearCombination = vec![(x.variable, Scalar::ONE)].iter().collect();
     let one_minus_y_lc: LinearCombination = vec![(Variable::One(), Scalar::from(1-y))].iter().collect();
     let y_lc: LinearCombination = vec![(Variable::One(), Scalar::from(y))].iter().collect();
     let inv_lc: LinearCombination = vec![(Variable::One(), Scalar::from(inv))].iter().collect();
@@ -49,7 +49,7 @@ pub fn is_nonzero_gadget<CS: ConstraintSystem>(
     x_inv: AllocatedScalar,
 ) -> Result<(), R1CSError> {
     let x_lc = LinearCombination::from(x.variable);
-    let y_lc = LinearCombination::from(Scalar::one());
+    let y_lc = LinearCombination::from(Scalar::ONE);
     let one_minus_y_lc = LinearCombination::from(Variable::One()) - y_lc.clone();
 
     // x * (1-y) = 0
@@ -57,7 +57,7 @@ pub fn is_nonzero_gadget<CS: ConstraintSystem>(
     cs.constrain(o1.into());
 
     // x * x_inv = y
-    let inv_lc: LinearCombination = vec![(x_inv.variable, Scalar::one())].iter().collect();
+    let inv_lc: LinearCombination = vec![(x_inv.variable, Scalar::ONE)].iter().collect();
     let (_, _, o2) = cs.multiply(x_lc.clone(), inv_lc.clone());
     // Output wire should have value `y`
     cs.constrain(o2 - y_lc);
@@ -85,7 +85,7 @@ mod tests {
             let y = 0;
 
             let (proof, commitment) = {
-                let value = Scalar::zero();
+                let value = Scalar::ZERO;
                 let mut prover_transcript = Transcript::new(b"ZeroTest");
                 let mut prover = Prover::new(&pc_gens, &mut prover_transcript);
 

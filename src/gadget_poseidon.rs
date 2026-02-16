@@ -75,7 +75,7 @@ impl PoseidonParams {
         if MDS_ENTRIES.len() != width {
             panic!("Incorrect width, only width {} is supported now", width);
         }
-        let mut mds: Vec<Vec<Scalar>> = vec![vec![Scalar::zero(); width]; width];
+        let mut mds: Vec<Vec<Scalar>> = vec![vec![Scalar::ZERO; width]; width];
         for i in 0..width {
             if MDS_ENTRIES[i].len() != width {
                 panic!("Incorrect width, only width {} is supported now", width);
@@ -101,7 +101,7 @@ fn simplify_lc(lc: LinearCombination) -> LinearCombination {
     let mut vars: HashMap<Variable, Scalar> = HashMap::new();
     let terms = lc.get_terms();
     for (var, val) in terms {
-        *vars.entry(var).or_insert(Scalar::zero()) += val;
+        *vars.entry(var).or_insert(Scalar::ZERO) += val;
     }
 
     let mut new_lc_terms = vec![];
@@ -179,7 +179,7 @@ impl SboxType {
         )?;
 
         // Constrain product of `inp_plus_const` and its inverse to be 1.
-        constrain_lc_with_scalar::<CS>(cs, var_o.unwrap().into(), &Scalar::one());
+        constrain_lc_with_scalar::<CS>(cs, var_o.unwrap().into(), &Scalar::ONE);
 
         Ok(var_r)
     }
@@ -200,7 +200,7 @@ fn Poseidon_permutation(
     let full_rounds_end = params.full_rounds_end;
 
     let mut current_state = input.to_owned();
-    let mut current_state_temp = vec![Scalar::zero(); width];
+    let mut current_state_temp = vec![Scalar::ZERO; width];
 
     let mut round_keys_offset = 0;
 
@@ -223,7 +223,7 @@ fn Poseidon_permutation(
         // Output of this round becomes input to next round
         for i in 0..width {
             current_state[i] = current_state_temp[i];
-            current_state_temp[i] = Scalar::zero();
+            current_state_temp[i] = Scalar::ZERO;
         }
     }
 
@@ -248,7 +248,7 @@ fn Poseidon_permutation(
         // Output of this round becomes input to next round
         for i in 0..width {
             current_state[i] = current_state_temp[i];
-            current_state_temp[i] = Scalar::zero();
+            current_state_temp[i] = Scalar::ZERO;
         }
     }
 
@@ -271,7 +271,7 @@ fn Poseidon_permutation(
         // Output of this round becomes input to next round
         for i in 0..width {
             current_state[i] = current_state_temp[i];
-            current_state_temp[i] = Scalar::zero();
+            current_state_temp[i] = Scalar::ZERO;
         }
     }
 
@@ -553,14 +553,14 @@ pub fn Poseidon_hash_4_gadget<'a, CS: ConstraintSystem>(
 /// Allocate padding constant and zeroes for Prover
 pub fn allocate_statics_for_prover(prover: &mut Prover, num_statics: usize) -> Vec<AllocatedScalar> {
     let mut statics = vec![];
-    let (_, var) = prover.commit(Scalar::from(ZERO_CONST), Scalar::zero());
+    let (_, var) = prover.commit(Scalar::from(ZERO_CONST), Scalar::ZERO);
     statics.push(AllocatedScalar {
         variable: var,
         assignment: Some(Scalar::from(ZERO_CONST)),
     });
 
     // Commitment to PADDING_CONST with blinding as 0
-    let (_, var) = prover.commit(Scalar::from(PADDING_CONST), Scalar::zero());
+    let (_, var) = prover.commit(Scalar::from(PADDING_CONST), Scalar::ZERO);
     statics.push(AllocatedScalar {
         variable: var,
         assignment: Some(Scalar::from(PADDING_CONST)),
@@ -568,7 +568,7 @@ pub fn allocate_statics_for_prover(prover: &mut Prover, num_statics: usize) -> V
 
     // Commit to 0 with randomness 0 for the rest of the elements of width
     for _ in 2..num_statics {
-        let (_, var) = prover.commit(Scalar::from(ZERO_CONST), Scalar::zero());
+        let (_, var) = prover.commit(Scalar::from(ZERO_CONST), Scalar::ZERO);
         statics.push(AllocatedScalar {
             variable: var,
             assignment: Some(Scalar::from(ZERO_CONST)),
@@ -581,10 +581,10 @@ pub fn allocate_statics_for_prover(prover: &mut Prover, num_statics: usize) -> V
 pub fn allocate_statics_for_verifier(verifier: &mut Verifier, num_statics: usize, pc_gens: &PedersenGens) -> Vec<AllocatedScalar> {
     let mut statics = vec![];
     // Commitment to PADDING_CONST with blinding as 0
-    let pad_comm = pc_gens.commit(Scalar::from(PADDING_CONST), Scalar::zero()).compress();
+    let pad_comm = pc_gens.commit(Scalar::from(PADDING_CONST), Scalar::ZERO).compress();
 
     // Commitment to 0 with blinding as 0
-    let zero_comm = pc_gens.commit(Scalar::from(ZERO_CONST), Scalar::zero()).compress();
+    let zero_comm = pc_gens.commit(Scalar::from(ZERO_CONST), Scalar::ZERO).compress();
 
     let v = verifier.commit(zero_comm.clone());
     statics.push(AllocatedScalar {
@@ -791,7 +791,7 @@ mod tests {
 
         let mut test_rng: StdRng = SeedableRng::from_seed([24u8; 32]);
         let _input = (0..4).map(|_| Scalar::random(&mut test_rng)).collect::<Vec<_>>();
-        let mut input = [Scalar::zero(); 4];
+        let mut input = [Scalar::ZERO; 4];
         input.copy_from_slice(_input.as_slice());
         let expected_output = Poseidon_hash_4(input, &s_params, sbox_type);
 
