@@ -38,7 +38,7 @@ impl<'a> VanillaSparseMerkleTree<'a> {
         let depth = TreeDepth;
         let mut db = HashMap::new();
         let mut empty_tree_hashes: Vec<Scalar> = vec![];
-        empty_tree_hashes.push(Scalar::zero());
+        empty_tree_hashes.push(Scalar::ZERO);
         for i in 1..=depth {
             let prev = empty_tree_hashes[i-1];
             //let new = mimc(&prev, &prev, hash_constants);
