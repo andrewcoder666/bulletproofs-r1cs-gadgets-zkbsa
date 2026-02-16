@@ -20,7 +20,7 @@ use crate::gadget_poseidon::{PoseidonParams, Poseidon_hash_2, Poseidon_hash_2_co
 
 type DBVal = (Scalar, Scalar);
 
-pub const TreeDepth: usize = 253;
+pub const TreeDepth: usize = 32;
 
 // TODO: ABSTRACT HASH FUNCTION BETTER
 
